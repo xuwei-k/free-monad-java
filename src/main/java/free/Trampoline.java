@@ -1,6 +1,6 @@
 package free;
 
-final class Trampoline {
+public final class Trampoline {
 
   private Trampoline(){
     throw new UnsupportedOperationException();
