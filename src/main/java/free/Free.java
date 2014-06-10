@@ -15,6 +15,35 @@ public abstract class Free<F, A>{
     return new Suspend<>(G.map(Done::new, value));
   }
 
+  /**
+   * @param <X1> existential type
+   * @param <X2> existential type
+   */
+  private static <X1, X2, F, A> Either<_1<F, Free<F, A>>, A> resume(Free<F, A> current, final Functor<F> F) {
+    while(true) {
+      if(current instanceof Done){
+        return Either.right(current.asDone().a);
+      }else if(current instanceof Suspend){
+        return Either.left(current.asSuspend().a);
+      }else {
+        final Gosub<F, X1, A> gosub1 = current.asGosub();
+        if(gosub1.a instanceof Done){
+          current = gosub1.f.apply(gosub1.a.asDone().a);
+        }else if(gosub1.a instanceof Suspend){
+          return Either.left(F.map(o -> o.flatMap(gosub1.f), gosub1.a.asSuspend().a));
+        }else {
+          final Gosub<F, X2, X1> gosub2 = gosub1.a.asGosub();
+          current = gosub2.a.flatMap(o ->
+            gosub2.f.apply(o).flatMap(gosub1.f)
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * @param <X> existential type
+   */
   @SuppressWarnings("unchecked")
   private <X> Gosub<F, X, A> asGosub(){
     return (Gosub<F, X, A>)this;
@@ -30,31 +59,8 @@ public abstract class Free<F, A>{
 
   public abstract <B> Free<F, B> flatMap(final F1<A, Free<F, B>> f);
 
-  // TODO use heap instead of stack
   public final Either<_1<F, Free<F, A>>, A> resume(final Functor<F> F) {
-    if(this instanceof Done){
-      return Either.right(this.asDone().a);
-    }else if(this instanceof Suspend){
-      return Either.left(this.asSuspend().a);
-    }else {
-      return
-      let(this.asGosub(), gosub1 -> {
-        if(gosub1.a instanceof Done){
-          return
-          gosub1.f.apply(gosub1.a.asDone().a).resume(F);
-        }else if(gosub1.a instanceof Suspend){
-          return
-          Either.left(F.map(o -> o.flatMap(gosub1.f), gosub1.a.asSuspend().a));
-        }else {
-          return
-          let(gosub1.a.asGosub(), gosub2 ->
-            gosub2.a.flatMap(o ->
-              gosub2.f.apply(o).flatMap(gosub1.f)
-            ).resume(F)
-          );
-        }
-      });
-    }
+    return resume(this, F);
   }
 
   public final <B> Free<F, B> map(final F1<A, B> f) {
