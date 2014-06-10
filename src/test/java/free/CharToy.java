@@ -1,5 +1,7 @@
 package free;
 
+import lombok.AllArgsConstructor;
+
 /**
  * http://eed3si9n.com/learning-scalaz/ja/Free+Monad.html
  */
@@ -33,13 +35,10 @@ abstract class CharToy<A> implements _1<CharToy.z, A>{
       }
     };
 
+  @AllArgsConstructor
   private static final class CharOutput<A> extends CharToy<A>{
     private final char a;
     private final A next;
-    private CharOutput(final char a, final A next) {
-      this.a = a;
-      this.next = next;
-    }
 
     @Override
     public <Z> Z fold(final F2<Character, A, Z> output, final F1<A, Z> bell, final Z done) {
@@ -52,11 +51,9 @@ abstract class CharToy<A> implements _1<CharToy.z, A>{
     }
   }
 
+  @AllArgsConstructor
   private static final class CharBell<A> extends CharToy<A> {
     private final A next;
-    private CharBell(final A next) {
-      this.next = next;
-    }
 
     @Override
     public <Z> Z fold(final F2<Character, A, Z> output, final F1<A, Z> bell, Z done) {

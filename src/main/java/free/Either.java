@@ -1,5 +1,7 @@
 package free;
 
+import lombok.AllArgsConstructor;
+
 public abstract class Either<A, B>{
   private Either(){}
 
@@ -13,11 +15,9 @@ public abstract class Either<A, B>{
     return new Right<>(y);
   }
 
+  @AllArgsConstructor
   private final static class Left<X, Y> extends Either<X, Y>{
     private final X value;
-    private Left(final X value) {
-      this.value = value;
-    }
 
     @Override
     public <X1> X1 fold(F1<X, X1> left, F1<Y, X1> right) {
@@ -25,11 +25,9 @@ public abstract class Either<A, B>{
     }
   }
 
+  @AllArgsConstructor
   private final static class Right<X, Y> extends Either<X, Y>{
     private final Y value;
-    private Right(final Y value) {
-      this.value = value;
-    }
 
     @Override
     public <X1> X1 fold(F1<X, X1> left, F1<Y, X1> right) {

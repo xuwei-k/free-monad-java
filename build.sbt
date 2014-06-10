@@ -7,3 +7,5 @@ javacOptions += "-Xlint:unchecked"
 autoScalaLibrary := false
 
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
+
+libraryDependencies += "org.projectlombok" % "lombok" % "1.14.2"

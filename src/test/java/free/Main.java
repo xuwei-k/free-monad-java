@@ -1,11 +1,12 @@
 package free;
 
 import static free.CharToy.*;
+import lombok.val;
 
 public final class Main {
 
   public static void main(final String[] args){
-    final Free<CharToy.z, Unit> program =
+    val program =
       output('A').flatMap(unit1 ->
         bell().flatMap(unit2 ->
           done()

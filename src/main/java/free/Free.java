@@ -1,5 +1,8 @@
 package free;
 
+import lombok.val;
+import lombok.AllArgsConstructor;
+
 public abstract class Free<F, A>{
   private Free(){}
 
@@ -20,7 +23,7 @@ public abstract class Free<F, A>{
     }else if(this instanceof Suspend){
       return Either.<_1<F, Free<F, A>>, A>left(((Suspend<F, A>)this).a);
     }else {
-      final Gosub<F, Object, A> gosub1 = (Gosub<F, Object, A>)this;
+      val gosub1 = (Gosub<F, Object, A>)this;
       if(gosub1.a instanceof Done){
         return
         gosub1.f.apply(((Done<F, A>)gosub1.a).a).resume(F);
@@ -28,7 +31,7 @@ public abstract class Free<F, A>{
         return
         Either.left(F.map(o -> o.flatMap(gosub1.f),((Suspend<F, Object>) gosub1.a).a));
       }else {
-        final Gosub<F, Free<F, A>, A> gosub2 = (Gosub<F, Free<F, A>, A>)gosub1.a;
+        val gosub2 = (Gosub<F, Free<F, A>, A>)gosub1.a;
         return
         gosub2.a.flatMap(o ->
           gosub2.f.apply(o).flatMap((F1<A, Free<F, A>>)gosub1.f)
@@ -41,40 +44,30 @@ public abstract class Free<F, A>{
     return flatMap(a -> new Done<>(f.apply(a)));
   }
 
+  @AllArgsConstructor
   private static final class Done<F, A> extends Free<F, A>{
     private final A a;
 
-    private Done(final A a) {
-      this.a = a;
-    }
-
     @Override
     public <B> Free<F, B> flatMap(F1<A, Free<F, B>> f) {
       return new Gosub<>(this, f);
     }
   }
 
+  @AllArgsConstructor
   private static final class Suspend<F, A> extends Free<F, A>{
     private final _1<F, Free<F, A>> a;
 
-    private Suspend(final _1<F, Free<F, A>> a) {
-      this.a = a;
-    }
-
     @Override
     public <B> Free<F, B> flatMap(F1<A, Free<F, B>> f) {
       return new Gosub<>(this, f);
     }
   }
 
+  @AllArgsConstructor
   private static final class Gosub<F, A, B> extends Free<F, B>{
     private final Free<F, A> a;
     private final F1<A, Free<F, B>> f;
-
-    private Gosub(final Free<F, A> a, final F1<A, Free<F, B>> f){
-      this.a = a;
-      this.f = f;
-    }
 
     @Override
     public <C> Free<F, C> flatMap(final F1<B, Free<F, C>> g) {
