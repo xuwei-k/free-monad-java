@@ -3,6 +3,18 @@ package free;
 import static free.CharToy.*;
 
 public final class Main {
+  static Free<F0.z, Long> fib(final Long n){
+    if(n < 2){
+      return Free.done(2L);
+    }else{
+      return
+      Trampoline.suspend(() -> fib(n - 1)).flatMap(x ->
+        Trampoline.suspend(() -> fib(n - 2)).map(y ->
+          x + y
+        )
+      );
+    }
+  }
 
   public static void main(final String[] args){
     final Free<CharToy.z, Unit> program =
@@ -13,6 +25,8 @@ public final class Main {
       );
 
     System.out.println(showProgram(program));
+
+    System.out.println(Trampoline.run(fib(35L)));
   }
 
   static <R> String showProgram(Free<CharToy.z, R> program){

@@ -3,16 +3,28 @@ package free;
 public abstract class Free<F, A>{
   private Free(){}
 
-  private static <X, Y> Y let(final X x, final F1<X, Y> f){
-    return f.apply(x);
-  }
-
   public static <G, B> Free<G, B> done(final B b){
     return new Done<>(b);
   }
 
   public static <G, B> Free<G, B> liftF(final _1<G, B> value, final Functor<G> G){
     return new Suspend<>(G.map(Done::new, value));
+  }
+
+  public static <G, B> Free<G, B> suspend(final _1<G, Free<G, B>> b) {
+    return new Suspend<>(b);
+  }
+
+  public final A go(final F1<_1<F, Free<F, A>>, Free<F, A>> f, final Functor<F> F){
+    Free<F, A> current = this;
+    while(true){
+      final Either<_1<F, Free<F, A>>, A> either = current.resume(F);
+      if(either.isLeft()){
+        current = f.apply(either.leftOrNull());
+      } else {
+        return either.rightOrNull();
+      }
+    }
   }
 
   /**

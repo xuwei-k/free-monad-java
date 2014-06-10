@@ -5,6 +5,30 @@ public abstract class Either<A, B>{
 
   public abstract <X> X fold(F1<A, X> left, F1<B, X> right);
 
+  public boolean isRight(){
+    return this instanceof Right;
+  }
+
+  public boolean isLeft(){
+    return this instanceof Left;
+  }
+
+  final B rightOrNull(){
+    if(isRight()){
+      return ((Right<A, B>) this).value;
+    }else {
+      return null;
+    }
+  }
+
+  final A leftOrNull(){
+    if(isLeft()){
+      return ((Left<A, B>) this).value;
+    }else {
+      return null;
+    }
+  }
+
   public static <X, Y> Either<X, Y> left(final X x){
     return new Left<>(x);
   }
