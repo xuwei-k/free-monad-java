@@ -3,6 +3,10 @@ package free;
 public abstract class Free<F, A>{
   private Free(){}
 
+  private static <X, Y> Y let(final X x, final F1<X, Y> f){
+    return f.apply(x);
+  }
+
   public static <G, B> Free<G, B> done(final B b){
     return new Done<>(b);
   }
@@ -11,29 +15,45 @@ public abstract class Free<F, A>{
     return new Suspend<>(G.map(Done::new, value));
   }
 
+  @SuppressWarnings("unchecked")
+  private <X> Gosub<F, X, A> asGosub(){
+    return (Gosub<F, X, A>)this;
+  }
+
+  private Suspend<F, A> asSuspend(){
+    return (Suspend<F, A>)this;
+  }
+
+  private Done<F, A> asDone(){
+    return (Done<F, A>)this;
+  }
+
   public abstract <B> Free<F, B> flatMap(final F1<A, Free<F, B>> f);
 
   // TODO use heap instead of stack
   public final Either<_1<F, Free<F, A>>, A> resume(final Functor<F> F) {
     if(this instanceof Done){
-      return Either.<_1<F, Free<F, A>>, A>right(((Done<F, A>)this).a);
+      return Either.right(this.asDone().a);
     }else if(this instanceof Suspend){
-      return Either.<_1<F, Free<F, A>>, A>left(((Suspend<F, A>)this).a);
+      return Either.left(this.asSuspend().a);
     }else {
-      final Gosub<F, Object, A> gosub1 = (Gosub<F, Object, A>)this;
-      if(gosub1.a instanceof Done){
-        return
-        gosub1.f.apply(((Done<F, A>)gosub1.a).a).resume(F);
-      }else if(gosub1.a instanceof Suspend){
-        return
-        Either.left(F.map(o -> o.flatMap(gosub1.f),((Suspend<F, Object>) gosub1.a).a));
-      }else {
-        final Gosub<F, Free<F, A>, A> gosub2 = (Gosub<F, Free<F, A>, A>)gosub1.a;
-        return
-        gosub2.a.flatMap(o ->
-          gosub2.f.apply(o).flatMap((F1<A, Free<F, A>>)gosub1.f)
-        ).resume(F);
-      }
+      return
+      let(this.asGosub(), gosub1 -> {
+        if(gosub1.a instanceof Done){
+          return
+          gosub1.f.apply(gosub1.a.asDone().a).resume(F);
+        }else if(gosub1.a instanceof Suspend){
+          return
+          Either.left(F.map(o -> o.flatMap(gosub1.f), gosub1.a.asSuspend().a));
+        }else {
+          return
+          let(gosub1.a.asGosub(), gosub2 ->
+            gosub2.a.flatMap(o ->
+              gosub2.f.apply(o).flatMap(gosub1.f)
+            ).resume(F)
+          );
+        }
+      });
     }
   }
 
