@@ -8,12 +8,7 @@ public abstract class Free<F, A>{
   }
 
   public static <G, B> Free<G, B> liftF(final _1<G, B> value, final Functor<G> G){
-    return new Suspend<>(G.map(new F1<B, Free<G, B>>() {
-      @Override
-      public Free<G, B> apply(final B b) {
-        return new Done<>(b);
-      }
-    }, value));
+    return new Suspend<>(G.map(Done::new, value));
   }
 
   public abstract <B> Free<F, B> flatMap(final F1<A, Free<F, B>> f);
@@ -31,32 +26,19 @@ public abstract class Free<F, A>{
         gosub1.f.apply(((Done<F, A>)gosub1.a).a).resume(F);
       }else if(gosub1.a instanceof Suspend){
         return
-        Either.left(F.map(new F1<Free<F, Object>, Free<F, A>>(){
-          @Override
-          public Free<F, A> apply(final Free<F, Object> o) {
-            return o.flatMap(gosub1.f);
-          }
-        },(((Suspend<F, Object>) gosub1.a).a)));
+        Either.left(F.map(o -> o.flatMap(gosub1.f),((Suspend<F, Object>) gosub1.a).a));
       }else {
         final Gosub<F, Free<F, A>, A> gosub2 = (Gosub<F, Free<F, A>, A>)gosub1.a;
         return
-        gosub2.a.flatMap(new F1<Free<F, A>, Free<F, A>>() {
-          @Override
-          public Free<F, A> apply(Free<F, A> o) {
-            return gosub2.f.apply(o).flatMap((F1<A, Free<F, A>>)gosub1.f);
-          }
-        }).resume(F);
+        gosub2.a.flatMap(o ->
+          gosub2.f.apply(o).flatMap((F1<A, Free<F, A>>)gosub1.f)
+        ).resume(F);
       }
     }
   }
 
   public final <B> Free<F, B> map(final F1<A, B> f) {
-    return flatMap(new F1<A, Free<F, B>>() {
-      @Override
-      public Free<F, B> apply(A a) {
-        return new Done<>(f.apply(a));
-      }
-    });
+    return flatMap(a -> new Done<>(f.apply(a)));
   }
 
   private static final class Done<F, A> extends Free<F, A>{
@@ -96,12 +78,7 @@ public abstract class Free<F, A>{
 
     @Override
     public <C> Free<F, C> flatMap(final F1<B, Free<F, C>> g) {
-      return new Gosub<>(a, new F1<A, Free<F, C>>() {
-        @Override
-        public Free<F, C> apply(final A aa) {
-          return new Gosub<>(f.apply(aa), g);
-        }
-      });
+      return new Gosub<>(a, aa -> new Gosub<>(f.apply(aa), g));
     }
   }
 
