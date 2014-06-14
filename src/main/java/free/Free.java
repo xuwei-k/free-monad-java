@@ -27,6 +27,13 @@ public abstract class Free<F, A>{
     }
   }
 
+  public final <G> _1<G, A> foldMap(final NT<F, G> f, final Functor<F> F, final Monad<G> G){
+    return resume(F).fold(
+      left -> G.flatMap(x -> x.foldMap(f, F, G), f.apply(left)),
+      right -> G.point(() -> right)
+    );
+  }
+
   /**
    * @param <X1> existential type
    * @param <X2> existential type

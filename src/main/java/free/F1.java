@@ -8,4 +8,8 @@ public interface F1<A, B> {
   }
 
   public abstract B apply(A a);
+
+  public default <C> F1<A, C> andThen(final F1<B, C> f){
+    return a -> f.apply(apply(a));
+  }
 }
