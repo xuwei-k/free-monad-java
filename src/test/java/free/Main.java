@@ -27,6 +27,8 @@ public final class Main {
     System.out.println(showProgram(program));
 
     System.out.println(Trampoline.run(fib(35L)));
+
+    System.out.println(Free.runFCId(Http.sample1, Http.apacheInterpreter));
   }
 
   static <R> String showProgram(Free<CharToy.z, R> program){

@@ -1,6 +1,6 @@
 package free;
 
-public abstract class Free<F, A>{
+public abstract class Free<F, A> implements _1<Free<F, ?>, A> {
   private Free(){}
 
   public static <G, B> Free<G, B> done(final B b){
@@ -15,6 +15,45 @@ public abstract class Free<F, A>{
     return new Suspend<>(b);
   }
 
+  public static <S, B> Free<Coyoneda<S, ?>, B> liftFC(final _1<S, B> s){
+    return Free.liftF(Coyoneda.lift(s), Coyoneda.functor());
+  }
+
+  public static <S> Monad<Free<S, ?>> freeMonad(final Functor<S> F){
+    return
+    new Monad<Free<S, ?>>() {
+      @Override
+      public <A> _1<Free<S, ?>, A> point(F0<A> a) {
+        return Free.done(a.apply());
+      }
+
+      @Override
+      public <A, B> _1<Free<S, ?>, B> flatMap(F1<A, _1<Free<S, ?>, B>> f, _1<Free<S, ?>, A> fa) {
+        return ((Free<S, A>)fa).flatMap(a -> (Free<S, B>)f.apply(a));
+      }
+    };
+  }
+
+  public static <G> Monad<Free<Coyoneda<G, ?>, ?>> freeCoyonedaMonad(){
+    return freeMonad(Coyoneda.functor());
+  }
+
+  public static <S, M, B> _1<M, B> runFC(final Free<Coyoneda<S, ?>, B> sa, final NT<S, M> interpreter, final Monad<M> M) {
+    return
+    sa.foldMap(new NT<Coyoneda<S, ?>, M>(){
+      @Override
+      public <A> _1<M, A> apply(_1<Coyoneda<S, ?>, A> cy) {
+        return ((Coyoneda<S, A>)cy).with((fi, k) ->
+          M.map(k, interpreter.apply(fi))
+        );
+      }
+    }, Coyoneda.functor(), M);
+  }
+
+  public static <S, B> B runFCId(final Free<Coyoneda<S, ?>, B> sa, final NT<S, Id.z> interpreter) {
+    return ((Id<B>)runFC(sa, interpreter, Id.monad)).value;
+  }
+
   public final A go(final F1<_1<F, Free<F, A>>, Free<F, A>> f, final Functor<F> F){
     Free<F, A> current = this;
     while(true){
@@ -26,6 +65,7 @@ public abstract class Free<F, A>{
       }
     }
   }
+
 
   public final <G> _1<G, A> foldMap(final NT<F, G> f, final Functor<F> F, final Monad<G> G){
     return resume(F).fold(
