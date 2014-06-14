@@ -37,10 +37,22 @@ public abstract class Http<A> implements _1<Http.z, A> {
     return Free.liftFC(new Post<>(url, F1.id()));
   }
 
-  public static NT<Http.z, Id.z> apacheInterpreter =
-    new NT<z, Id.z>() {
+  final static class HttpError{
+    final String url;
+    final int code;
+    final String body;
+
+    HttpError(String url, int code, String body) {
+      this.url = url;
+      this.code = code;
+      this.body = body;
+    }
+  }
+
+  public static NT<Http.z, Either<HttpError, ?>> apacheInterpreter =
+    new NT<z, Either<HttpError, ?>>() {
       @Override
-      public <A> _1<Id.z, A> apply(_1<z, A> fa) {
+      public <A> _1<Either<HttpError, ?>, A> apply(_1<z, A> fa) {
         final Http<A> http = ((Http<A>)fa);
         final HttpRequestBase request;
         if(http instanceof Get){
@@ -51,8 +63,13 @@ public abstract class Http<A> implements _1<Http.z, A> {
           throw new RuntimeException("no match http method " + http);
         }
         try(final CloseableHttpResponse res = HttpClients.createDefault().execute(request)){
+          final int code = res.getStatusLine().getStatusCode();
           final String body = EntityUtils.toString(res.getEntity(), "UTF-8");
-          return new Id<>(http.action.apply(body));
+          if(code < 300){
+            return Either.right(http.action.apply(body));
+          }else{
+            return Either.left(new HttpError(http.url, code, body));
+          }
         }catch(IOException e){
           throw new RuntimeException(e);
         }
