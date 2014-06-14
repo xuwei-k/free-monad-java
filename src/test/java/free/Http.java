@@ -64,20 +64,19 @@ public abstract class Http<A> implements _1<Http.z, A> {
   private static final String githubRawURL =
     "https://raw.githubusercontent.com/";
 
-  private static final String freeMonadJavaRaw(final String file){
+  private static String freeMonadJavaRaw(final String file){
     return githubRawURL + "xuwei-k/free-monad-java/master/src/main/java/free/" + file;
   }
 
   public static Free<Coyoneda<Http.z, ?>, String> sample1 =
-    get(freeMonadJavaRaw("Free.java")).flatMap(
-      freeDotJava ->
-        get(freeMonadJavaRaw("Coyoneda.java")).flatMap(
-          coyonedaDotJava ->
-            get(freeMonadJavaRaw("Monad.java")).map(
-              monadDotJava ->
-              freeDotJava + coyonedaDotJava + monadDotJava
-            )
-        )
+    (Free<Coyoneda<z,?>,String>)(
+      monad.apply3(
+        () -> get(freeMonadJavaRaw("Free.java")),
+        () -> get(freeMonadJavaRaw("Coyoneda.java")),
+        () -> get(freeMonadJavaRaw("Monad.java")),
+        (freeDotJava, coyonedaDotJava, monadDotJava) ->
+          freeDotJava + coyonedaDotJava + monadDotJava
+      )
     );
 
 }
