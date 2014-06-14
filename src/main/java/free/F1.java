@@ -1,7 +1,7 @@
 package free;
 
 @FunctionalInterface
-public interface F1<A, B> {
+public interface F1<A, B> extends _1<F1<A, ?>, B>{
 
   public static <X> F1<X, X> id() {
     return x -> x;
