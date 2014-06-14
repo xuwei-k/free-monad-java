@@ -1,7 +1,15 @@
 package free;
 
-public abstract class Either<A, B>{
+public abstract class Either<A, B> implements _1<Either<A, ?>, B> {
   private Either(){}
+
+  public <C, D> Either<C, D> bimap(final F1<A, C> f, final F1<B, D> g) {
+    return fold(l -> left(f.apply(l)), r -> right(g.apply(r)));
+  }
+
+  public Either<B, A> swap(){
+    return fold(Either::right, Either::left);
+  }
 
   public abstract <X> X fold(F1<A, X> left, F1<B, X> right);
 
@@ -11,6 +19,24 @@ public abstract class Either<A, B>{
 
   public boolean isLeft(){
     return this instanceof Left;
+  }
+
+  @SuppressWarnings("unchecked")
+  public final <C> Either<A, C> map(final F1<B, C> f){
+    if(isLeft()){
+      return (Either<A, C>)this;
+    }else{
+      return right(f.apply(rightOrNull()));
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public final <C> Either<A, C> flatMap(final F1<B, Either<A, C>> f){
+    if(isLeft()){
+      return (Either<A, C>)this;
+    }else{
+      return f.apply(rightOrNull());
+    }
   }
 
   final B rightOrNull(){
@@ -35,6 +61,20 @@ public abstract class Either<A, B>{
 
   public static <X, Y> Either<X, Y> right(final Y y){
     return new Right<>(y);
+  }
+
+  public static <L> Monad<Either<L, ?>> monad(){
+    return new Monad<Either<L, ?>>() {
+      @Override
+      public <A> _1<Either<L, ?>, A> point(F0<A> a) {
+        return right(a.apply());
+      }
+
+      @Override
+      public <A, B> _1<Either<L, ?>, B> flatMap(F1<A, _1<Either<L, ?>, B>> f, _1<Either<L, ?>, A> fa) {
+        return ((Either<L, A>)fa).flatMap(x -> (Either<L, B>)f.apply(x));
+      }
+    };
   }
 
   private final static class Left<X, Y> extends Either<X, Y>{
