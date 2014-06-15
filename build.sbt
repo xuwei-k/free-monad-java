@@ -16,4 +16,6 @@ lazy val free = project.settings(
 
 lazy val scalazBinding = project.settings(
   commonSettings : _*
+).settings(
+  libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0-M7"
 ).dependsOn(free)
