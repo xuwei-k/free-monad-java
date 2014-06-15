@@ -15,6 +15,8 @@ public abstract class List<A> implements _1<List.z, A> {
     return reverseMap(f).reverse();
   }
 
+  public abstract <B> B cata(final F0<B> empty, final F2<A, List<A>, B> nonEmpty);
+
   public abstract <B> List<B> reverseMap(F1<A, B> f);
 
   public abstract List<A> reverse();
@@ -64,6 +66,10 @@ public abstract class List<A> implements _1<List.z, A> {
 
   public final List<A> append(final List<A> list){
     return reverse().foldLeft(list, (as, a) -> new Cons<>(a, as));
+  }
+
+  public final List<A> cons(final A head){
+    return new Cons<>(head, this);
   }
 
   public final java.util.List<A> toJavaList(){
@@ -169,6 +175,11 @@ public abstract class List<A> implements _1<List.z, A> {
     }
 
     @Override
+    public <B> B cata(F0<B> empty, F2<A, List<A>, B> nonEmpty) {
+      return nonEmpty.apply(head, tail);
+    }
+
+    @Override
     public <B> List<B> reverseMap(F1<A, B> f) {
       List<B> bs = nil();
       List<A> as = this;
@@ -210,6 +221,11 @@ public abstract class List<A> implements _1<List.z, A> {
     @Override
     public Option<List<A>> tailOption() {
       return Option.none();
+    }
+
+    @Override
+    public <B> B cata(F0<B> empty, F2<A, List<A>, B> nonEmpty) {
+      return empty.apply();
     }
 
     @Override
