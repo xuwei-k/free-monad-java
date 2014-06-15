@@ -16,6 +16,18 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
   public abstract Option<A> orElse(final Option<A> a);
 
+  public final boolean isEmpty(){
+    return this instanceof None;
+  }
+
+  public final boolean isDefined(){
+    return this instanceof Some;
+  }
+
+  public abstract <E> Either<E, A> toRight(F0<E> left);
+
+  public abstract <E> Either<A, E> toLeft(F0<E> right);
+
   public abstract A getOrElse(final F0<A> a);
 
   public abstract A getOrThrow(final RuntimeException e);
@@ -80,6 +92,16 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
     }
 
     @Override
+    public <E> Either<E, A> toRight(F0<E> left) {
+      return Either.right(value);
+    }
+
+    @Override
+    public <E> Either<A, E> toLeft(F0<E> right) {
+      return Either.left(value);
+    }
+
+    @Override
     public A getOrElse(F0<A> a) {
       return value;
     }
@@ -106,6 +128,7 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
         @Override
         public A next() {
           if(hasNext){
+            hasNext = false;
             return value;
           }else {
             throw new NoSuchElementException();
@@ -118,6 +141,10 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
   @SuppressWarnings("unchecked")
   public static <A> Option<A> none(){
     return (Option<A>)NONE;
+  }
+
+  public static <A> Option<A> some(final A a){
+    return new Some<>(a);
   }
 
   private static final Option<Object> NONE = new None<>();
@@ -143,6 +170,16 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
     @Override
     public Option<A> orElse(Option<A> a) {
       return a;
+    }
+
+    @Override
+    public <E> Either<E, A> toRight(F0<E> left) {
+      return Either.left(left.apply());
+    }
+
+    @Override
+    public <E> Either<A, E> toLeft(F0<E> right) {
+      return Either.right(right.apply());
     }
 
     @Override
