@@ -34,34 +34,56 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
   public abstract A getOrThrow(final String errorMessage);
 
-  public static MonadPlus<Option.z> monadPlus(){
-    return new MonadPlus<z>() {
-      @Override
-      public <A> _1<z, A> point(F0<A> a) {
-        return new Some<>(a.apply());
-      }
+  private static Instance instance = new Instance();
 
-      @Override
-      @SuppressWarnings("unchecked")
-      public <A, B> _1<z, B> flatMap(F1<A, _1<z, B>> f, _1<z, A> fa) {
-        return ((Option<A>)fa).flatMap((F1<A, Option<B>>)((Object)f));
-      }
+  public static MonadPlus<Option.z> monadPlus = instance;
 
-      @Override
-      public <A, B> _1<z, B> map(F1<A, B> f, _1<z, A> fa) {
-        return ((Option<A>)fa).map(f);
-      }
+  public static Traverse<Option.z> traverse = instance;
 
-      @Override
-      public <A> _1<z, A> empty() {
-        return none();
-      }
+  private static final class Instance implements MonadPlus<z>, Traverse<z> {
 
-      @Override
-      public <A> _1<z, A> plus(_1<z, A> a1, _1<z, A> a2) {
-        return ((Option<A>)a1).orElse((Option<A>)a2);
-      }
-    };
+    @Override
+    public <A> _1<z, A> point(F0<A> a) {
+      return new Some<>(a.apply());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <A, B> _1<z, B> flatMap(F1<A, _1<z, B>> f, _1<z, A> fa) {
+      return ((Option<A>)fa).flatMap((F1<A, Option<B>>)((Object)f));
+    }
+
+    @Override
+    public <A, B> _1<z, B> map(F1<A, B> f, _1<z, A> fa) {
+      return ((Option<A>)fa).map(f);
+    }
+
+    @Override
+    public <A> _1<z, A> empty() {
+      return none();
+    }
+
+    @Override
+    public <A> _1<z, A> plus(_1<z, A> a1, _1<z, A> a2) {
+      return ((Option<A>)a1).orElse((Option<A>)a2);
+    }
+
+    @Override
+    public <A, B> B foldMap(F1<A, B> f, _1<z, A> fa, Monoid<B> B) {
+      return ((Option<A>)fa).fold(f, () -> B.zero());
+    }
+
+    @Override
+    public <A, B> B foldLeft(_1<z, A> fa, B z, F2<B, A, B> f) {
+      return ((Option<A>)fa).fold(a -> f.apply(z, a), () -> z);
+    }
+
+    @Override
+    public <G, A, B> _1<G, _1<z, B>> traverse(_1<z, A> fa, F1<A, _1<G, B>> f, Applicative<G> G) {
+      return ((Option<A>)fa).map(a ->
+        G.map(b -> (_1<z, B>)Option.some(b), f.apply(a))
+      ).getOrElse(() -> G.point(() -> Option.none()));
+    }
   }
 
   private static final class Some<A> extends Option<A>{
