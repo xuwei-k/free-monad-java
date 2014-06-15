@@ -23,6 +23,27 @@ public abstract class List<A> implements _1<List.z, A> {
 
   public abstract <B> B foldLeft(B z, F2<B, A, B> f);
 
+  public final <B> B foldMap(final F1<A, B> f, final Monoid<B> F){
+    B result = F.zero();
+    List<A> list = this;
+    while(list.nonEmpty()){
+      result = f.apply(((Cons<A>)list).head);
+      list = ((Cons<A>)list).tail;
+    }
+    return result;
+  }
+
+  public final <B> B foldRight(B z, F2<A, B, B> f){
+    return reverse().foldLeft(z, f.swap());
+  }
+
+  public final <F, B> _1<F, List<B>> traverse(final F1<A, _1<F, B>> f, final Applicative<F> F){
+    return foldRight(
+      F.point(() -> nil()),
+      (a, fbs) -> F.apply2(() -> f.apply(a), () -> fbs, Cons::new)
+    );
+  }
+
   public final boolean nonEmpty(){
     return this instanceof Cons;
   }
@@ -73,6 +94,59 @@ public abstract class List<A> implements _1<List.z, A> {
 
   public static <A> List<A> join(final List<List<A>> list){
     return list.reverse().foldLeft(nil(), (t, h) -> h.append(t));
+  }
+
+  public static <A> List<A> single(final A a){
+    return new Cons<>(a, nil());
+  }
+
+  public static Instance instance = new Instance();
+
+  public static MonadPlus<z> monadPlus = instance;
+
+  public static Traverse<z> traverse = instance;
+
+  private static final class Instance implements MonadPlus<z>, Traverse<z> {
+    @Override
+    public <A> _1<z, A> point(F0<A> a) {
+      return single(a.apply());
+    }
+
+    @Override
+    public <A, B> _1<z, B> flatMap(F1<A, _1<z, B>> f, _1<z, A> fa) {
+      return ((List<A>)fa).flatMap(a -> (List<B>)f.apply(a));
+    }
+
+    @Override
+    public <A> _1<z, A> empty() {
+      return nil();
+    }
+
+    @Override
+    public <A> _1<z, A> plus(_1<z, A> a1, _1<z, A> a2) {
+      return ((List<A>)a1).append((List<A>)a2);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <G, A, B> _1<G, _1<z, B>> traverse(_1<z, A> fa, F1<A, _1<G, B>> f, Applicative<G> G) {
+      return (_1<G, _1<z, B>>)(Object)((List<A>)fa).traverse(f, G);
+    }
+
+    @Override
+    public <A, B> B foldMap(F1<A, B> f, _1<z, A> fa, Monoid<B> B) {
+      return ((List<A>)fa).foldMap(f, B);
+    }
+
+    @Override
+    public <A, B> B foldLeft(_1<z, A> fa, B z, F2<B, A, B> f) {
+      return ((List<A>)fa).foldLeft(z, f);
+    }
+
+    @Override
+    public <A, B> _1<z, B> map(F1<A, B> f, _1<z, A> fa) {
+      return ((List<A>)fa).map(f);
+    }
   }
 
   private static final class Cons<A> extends List<A> {
