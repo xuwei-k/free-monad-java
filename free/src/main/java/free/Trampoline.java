@@ -17,4 +17,8 @@ public final class Trampoline {
   public static <A> A run(final Free<F0.z, A> f){
     return f.go(a -> ((F0<Free<F0.z, A>>)a).apply(), F0.monad);
   }
+
+  public static final Monad<Free<F0.z, ?>> monad =
+    Free.freeMonad(F0.monad);
+
 }
