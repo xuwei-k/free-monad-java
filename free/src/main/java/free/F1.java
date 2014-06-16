@@ -29,7 +29,7 @@ public interface F1<A, B> extends _1<F1<A, ?>, B>{
     return new Instance<>();
   }
 
-  static final class Instance<X> implements Monad<F1<X, ?>> {
+  static final class Instance<X> implements Monad.WithDefault<F1<X, ?>> {
     private Instance(){}
 
     @Override

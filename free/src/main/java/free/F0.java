@@ -22,7 +22,7 @@ public interface F0<A> extends _1<F0.z, A> {
   public static final Monad<z> monad = Instance.value;
   public static final Traverse1<z> traverse1 = Instance.value;
 
-  static final class Instance implements Monad<F0.z>, Traverse1<F0.z> {
+  static final class Instance implements Monad.WithDefault<z>, Traverse1<F0.z> {
     private Instance(){}
     private static final Instance value = new Instance();
 

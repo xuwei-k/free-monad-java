@@ -41,7 +41,7 @@ public final class EitherT<F, A, B> implements _1<EitherT<F, A, ?>, B> {
   }
 
   public static <F, L> Monad<EitherT<F, L, ?>> monad(final Monad<F> F){
-    return new Monad<EitherT<F, L, ?>>() {
+    return new Monad.WithDefault<EitherT<F, L, ?>>() {
       @Override
       public <A> _1<EitherT<F, L, ?>, A> point(F0<A> a) {
         return EitherT.point(a, F);

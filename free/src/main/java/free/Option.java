@@ -40,7 +40,7 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
   public static Traverse<Option.z> traverse = instance;
 
-  private static final class Instance implements MonadPlus<z>, Traverse<z> {
+  private static final class Instance implements MonadPlus.WithDefault<z>, Traverse<z> {
 
     @Override
     public <A> _1<z, A> point(F0<A> a) {

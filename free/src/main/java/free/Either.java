@@ -64,7 +64,7 @@ public abstract class Either<A, B> implements _1<Either<A, ?>, B> {
   }
 
   public static <L> Monad<Either<L, ?>> monad(){
-    return new Monad<Either<L, ?>>() {
+    return new Monad.WithDefault<Either<L, ?>>() {
       @Override
       public <A> _1<Either<L, ?>, A> point(F0<A> a) {
         return right(a.apply());

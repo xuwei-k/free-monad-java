@@ -44,7 +44,7 @@ public final class ListT<F, A> implements _1<ListT<F, ?>, A> {
   }
 
   public static <F> MonadPlus<ListT<F, ?>> functor(final Monad<F> F){
-    return new MonadPlus<ListT<F, ?>>() {
+    return new MonadPlus.WithDefault<ListT<F, ?>>() {
       @Override
       public <A, B> _1<ListT<F, ?>, B> map(F1<A, B> f, _1<ListT<F, ?>, A> fa) {
         return ((ListT<F, A>)fa).map(f, F);

@@ -44,7 +44,7 @@ public final class OptionT<F, A> implements _1<OptionT<F, ?>, A> {
   }
 
   public static <F> MonadPlus<OptionT<F, ?>> monadPlus(final Monad<F> F){
-    return new MonadPlus<OptionT<F, ?>>() {
+    return new MonadPlus.WithDefault<OptionT<F, ?>>() {
       @Override
       public <A> _1<OptionT<F, ?>, A> point(F0<A> a) {
         return new OptionT<>(F.point(() -> Option.some(a.apply())));

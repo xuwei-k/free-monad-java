@@ -21,7 +21,7 @@ public abstract class Free<F, A> implements _1<Free<F, ?>, A> {
 
   public static <S> Monad<Free<S, ?>> freeMonad(final Functor<S> F){
     return
-    new Monad<Free<S, ?>>() {
+    new Monad.WithDefault<Free<S, ?>>() {
       @Override
       public <A> _1<Free<S, ?>, A> point(F0<A> a) {
         return Free.done(a.apply());

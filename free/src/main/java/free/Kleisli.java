@@ -75,7 +75,7 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
   }
 
   public static <F, X> Bind<Kleisli<F, X, ?>> bind(final Bind<F> F){
-    return new Bind<Kleisli<F, X, ?>>() {
+    return new Bind.WithDefault<Kleisli<F, X, ?>>() {
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
         return ((Kleisli<F, X, A>)fa).map(f, F);
@@ -89,7 +89,7 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
   }
 
   public static <F, X> Monad<Kleisli<F, X, ?>> monad(final Monad<F> F){
-    return new Monad<Kleisli<F, X, ?>>() {
+    return new Monad.WithDefault<Kleisli<F, X, ?>>() {
       @Override
       public <A> _1<Kleisli<F, X, ?>, A> point(F0<A> a) {
         return Kleisli.point(a, F);

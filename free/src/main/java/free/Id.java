@@ -15,7 +15,7 @@ public final class Id<A> implements _1<Id.z, A> {
   }
 
   public static Monad<z> monad =
-    new Monad<z>() {
+    new Monad.WithDefault<z>() {
       @Override
       public <A, B> _1<z, B> map(F1<A, B> f, _1<z, A> fa) {
         return ((Id<A>)fa).map(f);
