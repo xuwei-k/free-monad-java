@@ -88,7 +88,7 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
     };
   }
 
-  public static <F, X> Bind<Kleisli<F, X, ?>> monad(final Monad<F> F){
+  public static <F, X> Monad<Kleisli<F, X, ?>> monad(final Monad<F> F){
     return new Monad<Kleisli<F, X, ?>>() {
       @Override
       public <A> _1<Kleisli<F, X, ?>, A> point(F0<A> a) {
