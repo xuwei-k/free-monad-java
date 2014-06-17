@@ -32,11 +32,15 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
     return new Kleisli<>(a -> F.point(b));
   }
 
+  private static <F, A, B> Kleisli<F, A, B> narrow(final _1<Kleisli<F, A, ?>, B> a){
+    return (Kleisli<F, A, B>)a;
+  }
+
   public static <F, X> Functor<Kleisli<F, X, ?>> functor(final Functor<F> F){
     return new Functor<Kleisli<F, X, ?>>() {
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
     };
   }
@@ -45,12 +49,12 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
     return new Apply<Kleisli<F, X, ?>>() {
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> ap(F0<_1<Kleisli<F, X, ?>, F1<A, B>>> f, F0<_1<Kleisli<F, X, ?>, A>> fa) {
-        return ((Kleisli<F, X, A>)fa.apply()).ap(f.map(k -> (Kleisli<F, X, F1<A, B>>)k), F);
+        return narrow(fa.apply()).ap(f.map(Kleisli::narrow), F);
       }
 
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
     };
   }
@@ -59,7 +63,7 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
     return new Applicative<Kleisli<F, X, ?>>() {
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> ap(F0<_1<Kleisli<F, X, ?>, F1<A, B>>> f, F0<_1<Kleisli<F, X, ?>, A>> fa) {
-        return ((Kleisli<F, X, A>)fa.apply()).ap(f.map(k -> (Kleisli<F, X, F1<A, B>>)k), F);
+        return narrow(fa.apply()).ap(f.map(Kleisli::narrow), F);
       }
 
       @Override
@@ -69,7 +73,7 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
 
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
     };
   }
@@ -78,12 +82,12 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
     return new Bind.WithDefault<Kleisli<F, X, ?>>() {
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
 
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> flatMap(F1<A, _1<Kleisli<F, X, ?>, B>> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).flatMap(f.andThen(k -> (Kleisli<F, X, B>)k), F);
+        return narrow(fa).flatMap(f.andThen(Kleisli::narrow), F);
       }
     };
   }
@@ -97,12 +101,12 @@ public final class Kleisli<F, A, B> implements _1<Kleisli<F, A, ?>, B>{
 
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> map(F1<A, B> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
 
       @Override
       public <A, B> _1<Kleisli<F, X, ?>, B> flatMap(F1<A, _1<Kleisli<F, X, ?>, B>> f, _1<Kleisli<F, X, ?>, A> fa) {
-        return ((Kleisli<F, X, A>)fa).flatMap(f.andThen(k -> (Kleisli<F, X, B>)k), F);
+        return narrow(fa).flatMap(f.andThen(Kleisli::narrow), F);
       }
     };
   }
