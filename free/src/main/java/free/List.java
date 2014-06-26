@@ -123,7 +123,7 @@ public abstract class List<A> implements _1<List.z, A> {
     return new Cons<>(a, nil());
   }
 
-  public static Instance instance = new Instance();
+  private static Instance instance = new Instance();
 
   public static MonadPlus<z> monadPlus = instance;
 
