@@ -23,7 +23,15 @@ public abstract class List<A> implements _1<List.z, A> {
 
   public abstract <B> List<B> flatMap(F1<A, List<B>> f);
 
-  public abstract <B> B foldLeft(B z, F2<B, A, B> f);
+  public final <B> B foldLeft(B z, F2<B, A, B> f){
+    B result = z;
+    List<A> src = this;
+    while(src.nonEmpty()){
+      result = f.apply(result, ((Cons<A>)src).head);
+      src = ((Cons<A>)src).tail;
+    }
+    return result;
+  }
 
   public final <B> B foldMap(final F1<A, B> f, final Monoid<B> F){
     B result = F.zero();
@@ -94,6 +102,15 @@ public abstract class List<A> implements _1<List.z, A> {
     List<A> list = nil();
     for(int i = as.length - 1; i >= 0; i--){
       list = new Cons<>(as[i], list);
+    }
+    return list;
+  }
+
+  public static List<Integer> range(final int start, final int end){
+    assert start <= end;
+    List<Integer> list = nil();
+    for(int i = end; start <= i; i--){
+      list = new Cons<>(i, list);
     }
     return list;
   }
@@ -205,11 +222,6 @@ public abstract class List<A> implements _1<List.z, A> {
     public <B> List<B> flatMap(F1<A, List<B>> f) {
       return join(map(f));
     }
-
-    @Override
-    public <B> B foldLeft(B z, F2<B, A, B> f) {
-      return tail.foldLeft(f.apply(z, head), f);
-    }
   }
 
   private final static class Nil<A> extends List<A> {
@@ -243,11 +255,6 @@ public abstract class List<A> implements _1<List.z, A> {
     @SuppressWarnings("unchecked")
     public <B> List<B> flatMap(F1<A, List<B>> f) {
       return (List<B>)this;
-    }
-
-    @Override
-    public <B> B foldLeft(B z, F2<B, A, B> f) {
-      return z;
     }
   }
 }
