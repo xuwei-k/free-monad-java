@@ -36,11 +36,11 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
   public abstract A getOrThrow(final String errorMessage);
 
-  private static Instance instance = new Instance();
+  private static final Instance instance = new Instance();
 
-  public static MonadPlus<Option.z> monadPlus = instance;
+  public static final MonadPlus<Option.z> monadPlus = instance;
 
-  public static Traverse<Option.z> traverse = instance;
+  public static final Traverse<Option.z> traverse = instance;
 
   private static final class Instance implements MonadPlus.WithDefault<z>, Traverse<z> {
 

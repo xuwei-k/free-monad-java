@@ -134,9 +134,9 @@ public abstract class List<A> implements _1<List.z, A> {
 
   private static Instance instance = new Instance();
 
-  public static MonadPlus<z> monadPlus = instance;
+  public static final MonadPlus<z> monadPlus = instance;
 
-  public static Traverse<z> traverse = instance;
+  public static final Traverse<z> traverse = instance;
 
   private static final class Instance implements MonadPlus.WithDefault<z>, Traverse<z> {
     @Override
