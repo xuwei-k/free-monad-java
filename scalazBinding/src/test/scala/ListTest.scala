@@ -6,6 +6,7 @@ import scalaz.{Show, Equal}
 import scalaz.std.list._
 import scalaz.std.anyVal._
 import scalaz.syntax.contravariant._
+import scalaz.scalacheck.ScalazProperties._
 import scala.collection.JavaConversions._
 
 object ListTest extends scalaz.SpecLite {
@@ -37,5 +38,9 @@ object ListTest extends scalaz.SpecLite {
   property("length") = Prop.forAll { list: FList[Int] =>
     list.length must_=== list.toJavaList.size
   }
+
+  import free.Java2Scalaz.list
+
+  checkAll(monadPlus.strongLaws[FList])
 }
 
