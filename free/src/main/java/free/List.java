@@ -76,6 +76,10 @@ public abstract class List<A> implements _1<List.z, A> {
     return reverse().foldLeft(list, (as, a) -> new Cons<>(a, as));
   }
 
+  public final List<A> plus(final F0<List<A>> list){
+    return append(list.apply());
+  }
+
   public final List<A> cons(final A head){
     return new Cons<>(head, this);
   }
@@ -88,6 +92,11 @@ public abstract class List<A> implements _1<List.z, A> {
       self = ((Cons<A>)self).tail;
     }
     return result;
+  }
+
+  @Override
+  public final String toString(){
+    return toJavaList().toString();
   }
 
   private static Nil<Object> nil = new Nil<>();

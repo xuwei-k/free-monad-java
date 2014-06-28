@@ -31,6 +31,7 @@ lazy val scalazBinding = project.settings(
   commonSettings : _*
 ).settings(
   libraryDependencies += "org.scalaz" %% "scalaz-scalacheck-binding" % scalazV % "test",
+  libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazV,
   specLite := {
     println(s"downloading from ${specLiteURL}")
     val lines = IO.readLinesURL(url(specLiteURL))

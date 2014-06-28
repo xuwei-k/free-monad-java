@@ -16,6 +16,8 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
   public abstract Option<A> orElse(final Option<A> a);
 
+  public abstract Option<A> plus(final F0<Option<A>> a);
+
   public final boolean isEmpty(){
     return this instanceof None;
   }
@@ -65,7 +67,7 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
 
     @Override
     public <A> _1<z, A> plus(_1<z, A> a1, _1<z, A> a2) {
-      return ((Option<A>)a1).orElse((Option<A>)a2);
+      return ((Option<A>)a1).orElse((Option<A>) a2);
     }
 
     @Override
@@ -106,6 +108,11 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
     @Override
     public <B> Option<B> flatMap(F1<A, Option<B>> f) {
       return f.apply(value);
+    }
+
+    @Override
+    public Option<A> plus(final F0<Option<A>> a) {
+      return this;
     }
 
     @Override
@@ -192,6 +199,11 @@ public abstract class Option<A> implements Iterable<A>, _1<Option.z, A> {
     @Override
     public Option<A> orElse(Option<A> a) {
       return a;
+    }
+
+    @Override
+    public Option<A> plus(F0<Option<A>> a) {
+      return a.apply();
     }
 
     @Override
