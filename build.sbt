@@ -1,4 +1,6 @@
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.4"
+
+autoScalaLibrary := false
 
 scalacOptions ++= Seq("-Xexperimental", "-deprecation")
 
