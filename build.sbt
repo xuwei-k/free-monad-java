@@ -1,5 +1,5 @@
 val commonSettings = Seq(
-  scalaVersion := "2.11.1",
+  scalaVersion := "2.11.4",
   scalacOptions ++= Seq("-Xexperimental", "-deprecation"),
   javacOptions += "-Xlint:unchecked",
   licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
@@ -17,7 +17,7 @@ lazy val free = project.settings(
   libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.3" % "test"
 )
 
-val scalazV = "7.1.0-M7"
+val scalazV = "7.1.0"
 
 def specLiteURL = s"https://raw.github.com/scalaz/scalaz/v${scalazV}/tests/src/test/scala/scalaz/SpecLite.scala"
 def specLite = SettingKey[List[String]]("specLite")
