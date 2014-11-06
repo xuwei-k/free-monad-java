@@ -13,8 +13,9 @@ public final class EitherT<F, A, B> implements _1<EitherT<F, A, ?>, B> {
 
   public <C> EitherT<F, A, C> flatMap(final F1<B, EitherT<F, A, C>> f, final Monad<F> F){
     return new EitherT<>(
-      F.flatMap(e -> e.fold(
-        l -> F.point(() -> Either.left(l)), r -> f.apply(r).run
+      F.flatMap(e -> e.<_1<F, Either<A, C>>>fold(
+        l -> F.point(() -> Either.left(l)),
+        r -> f.apply(r).run
       ), run)
     );
   }

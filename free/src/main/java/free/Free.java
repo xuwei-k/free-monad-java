@@ -68,7 +68,7 @@ public abstract class Free<F, A> implements _1<Free<F, ?>, A> {
 
 
   public final <G> _1<G, A> foldMap(final NT<F, G> f, final Functor<F> F, final Monad<G> G){
-    return resume(F).fold(
+    return resume(F).<_1<G, A>>fold(
       left -> G.flatMap(x -> x.foldMap(f, F, G), f.apply(left)),
       right -> G.point(() -> right)
     );

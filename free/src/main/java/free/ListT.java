@@ -13,7 +13,7 @@ public final class ListT<F, A> implements _1<ListT<F, ?>, A> {
 
   public <B> ListT<F, B> flatMap(final F1<A, ListT<F, B>> f, final Monad<F> F){
     return new ListT<>(F.flatMap(list ->
-      list.cata(
+      list.<_1<F, List<B>>>cata(
         () -> F.point(() -> List.nil()),
         (h, t) -> t.foldLeft(f.apply(h), (fb, a) -> fb.append(f.apply(a), F)).run
       )

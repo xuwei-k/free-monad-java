@@ -13,7 +13,7 @@ public final class OptionT<F, A> implements _1<OptionT<F, ?>, A> {
 
   public <B> OptionT<F, B> flatMap(final F1<A, OptionT<F, B>> f, final Monad<F> F){
     return new OptionT<>(F.flatMap(o ->
-      o.fold(
+      o.<_1<F, Option<B>>>fold(
         z -> f.apply(z).run,
         () -> F.point(() -> Option.none())
       )

@@ -4,11 +4,11 @@ public abstract class Either<A, B> implements _1<Either<A, ?>, B> {
   private Either(){}
 
   public <C, D> Either<C, D> bimap(final F1<A, C> f, final F1<B, D> g) {
-    return fold(l -> left(f.apply(l)), r -> right(g.apply(r)));
+    return this.<Either<C, D>>fold(l -> left(f.apply(l)), r -> right(g.apply(r)));
   }
 
   public Either<B, A> swap(){
-    return fold(Either::right, Either::left);
+    return this.<Either<B, A>>fold(Either::right, Either::left);
   }
 
   public abstract <X> X fold(F1<A, X> left, F1<B, X> right);
