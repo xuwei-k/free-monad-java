@@ -9,6 +9,10 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
     this.t = t;
   }
 
+  public A head(){
+    return head;
+  }
+
   public <B> Cofree<F, B> applyCofree(final F1<A, B> f, final F1<Cofree<F, A>, Cofree<F, B>> g, final Functor<F> F){
     return new Cofree<>(f.apply(head), Free.narrow(Trampoline.monad.map(a -> F.map(g, a), t)));
   }
