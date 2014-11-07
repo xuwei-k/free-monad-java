@@ -40,12 +40,16 @@ public interface F1<A, B> extends _1<F1<A, ?>, B>{
 
     @Override
     public <A, B> _1<F1<X, ?>, B> map(F1<A, B> f, _1<F1<X, ?>, A> fa) {
-      return ((F1<X, A>)fa).map(f);
+      return narrow(fa).map(f);
     }
 
     @Override
     public <A, B> _1<F1<X, ?>, B> flatMap(F1<A, _1<F1<X, ?>, B>> f, _1<F1<X, ?>, A> fa) {
-      return ((F1<X, A>)fa).flatMap(a -> (F1<X, B>)f.apply(a));
+      return narrow(fa).flatMap(a -> narrow(f.apply(a)));
     }
+  }
+
+  public static <A, B> F1<A, B> narrow(final _1<F1<A, ?>, B> f){
+    return (F1<A, B>)f;
   }
 }
