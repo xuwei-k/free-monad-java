@@ -19,6 +19,10 @@ public abstract class Free<F, A> implements _1<Free<F, ?>, A> {
     return Free.liftF(Coyoneda.lift(s), Coyoneda.functor());
   }
 
+  public static <G, B> Free<G, B> narrow(final _1<Free<G, ?>, B> f){
+    return (Free<G, B>)f;
+  }
+
   public static <S> Monad<Free<S, ?>> freeMonad(final Functor<S> F){
     return
     new Monad.WithDefault<Free<S, ?>>() {
@@ -29,7 +33,7 @@ public abstract class Free<F, A> implements _1<Free<F, ?>, A> {
 
       @Override
       public <A, B> _1<Free<S, ?>, B> flatMap(F1<A, _1<Free<S, ?>, B>> f, _1<Free<S, ?>, A> fa) {
-        return ((Free<S, A>)fa).flatMap(a -> (Free<S, B>)f.apply(a));
+        return narrow(fa).flatMap(a -> narrow(f.apply(a)));
       }
     };
   }
