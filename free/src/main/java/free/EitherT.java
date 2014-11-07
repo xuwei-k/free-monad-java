@@ -36,7 +36,7 @@ public final class EitherT<F, A, B> implements _1<EitherT<F, A, ?>, B> {
     return new Functor<EitherT<F, L, ?>>() {
       @Override
       public <A, B> _1<EitherT<F, L, ?>, B> map(F1<A, B> f, _1<EitherT<F, L, ?>, A> fa) {
-        return ((EitherT<F, L, A>) fa).map(f, F);
+        return narrow(fa).map(f, F);
       }
     };
   }
@@ -50,9 +50,13 @@ public final class EitherT<F, A, B> implements _1<EitherT<F, A, ?>, B> {
 
       @Override
       public <A, B> _1<EitherT<F, L, ?>, B> flatMap(F1<A, _1<EitherT<F, L, ?>, B>> f, _1<EitherT<F, L, ?>, A> fa) {
-        return ((EitherT<F, L, A>)fa).flatMap(e -> (EitherT<F, L, B>)f.apply(e), F);
+        return narrow(fa).flatMap(e -> narrow(f.apply(e)), F);
       }
     };
+  }
+
+  public static <G, X, Y> EitherT<G, X, Y> narrow(final _1<EitherT<G, X, ?>, Y> e){
+    return (EitherT<G, X, Y>)e;
   }
 
 }
