@@ -99,7 +99,7 @@ public abstract class List<A> implements _1<List.z, A> {
     return toJavaList().toString();
   }
 
-  private static Nil<Object> nil = new Nil<>();
+  private static final Nil<Object> nil = new Nil<>();
 
   @SuppressWarnings("unchecked")
   public static <A> List<A> nil(){
