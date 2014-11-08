@@ -54,4 +54,28 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
   public static <G, X> Cofree<G, X> delay(final X h, final F0<_1<G, Cofree<G, X>>> t){
     return new Cofree<>(h, Trampoline.delay(t));
   }
+
+  public static <G, X> Cofree<G, X> narrow(final _1<Cofree<G, ?>, X> fa){
+    return (Cofree<G, X>)fa;
+  }
+
+  public static <F> Comonad<Cofree<F, ?>> comonad(final Functor<F> F){
+    return new Comonad<Cofree<F, ?>>(){
+
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> map(F1<A, B> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).map(f, F);
+      }
+
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> cobind(F1<_1<Cofree<F, ?>, A>, B> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).extend(f::apply, F);
+      }
+
+      @Override
+      public <A> A copoint(_1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).head;
+      }
+    };
+  }
 }
