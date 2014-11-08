@@ -49,6 +49,18 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
     );
   }
 
+  public <B> B foldMap1(final F1<A, B> f, final Foldable1<F> F, final Semigroup<B> G){
+    return G.append(f.apply(head), F.foldMap1(x -> x.foldMap1(f, F, G), tail(), G));
+  }
+
+  public <B> B foldLeft(final B z, final F2<B, A, B> f, final Foldable<F> F) {
+    return F.foldLeft(tail(), f.apply(z, head), (b, c) -> c.foldLeft(b, f, F));
+  }
+
+  public <B> B foldMapLeft1(final F1<A, B> z, final F2<B, A, B> f, final Foldable<F> F) {
+    return F.foldLeft(tail(), z.apply(head), (b, c) -> c.foldLeft(b, f, F));
+  }
+
   public static <G, X, Y> Cofree<G, X> unfold(final Y y, final F1<Y, T2<X, _1<G, Y>>> f, final Functor<G> G){
     final T2<X, _1<G, Y>> t = f.apply(y);
     final Free<F0.z, _1<G, Y>> gy = Free.done(t._2);
@@ -120,6 +132,25 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
       @Override
       public <A, B> _1<Cofree<F, ?>, B> map(F1<A, B> f, _1<Cofree<F, ?>, A> fa) {
         return narrow(fa).map(f, F);
+      }
+    };
+  }
+
+  public static <F> Foldable1<Cofree<F, ?>> foldable1(final Foldable1<F> F){
+    return new Foldable1<Cofree<F, ?>>() {
+      @Override
+      public <A, B> B foldMap1(F1<A, B> f, _1<Cofree<F, ?>, A> fa, Semigroup<B> B) {
+        return narrow(fa).foldMap1(f, F, B);
+      }
+
+      @Override
+      public <A, B> B foldMapLeft1(_1<Cofree<F, ?>, A> fa, F1<A, B> z, F2<B, A, B> f) {
+        return narrow(fa).foldMapLeft1(z, f, F);
+      }
+
+      @Override
+      public <A, B> B foldLeft(_1<Cofree<F, ?>, A> fa, B z, F2<B, A, B> f) {
+        return narrow(fa).foldLeft(z, f, F);
       }
     };
   }
