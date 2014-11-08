@@ -17,6 +17,10 @@ public interface F1<A, B> extends _1<F1<A, ?>, B>{
     return map(f);
   }
 
+  public default <C> F1<C, B> contramap(final F1<C, A> f){
+    return f.andThen(this);
+  }
+
   public default <C> F1<A, C> flatMap(final F1<B, F1<A, C>> f){
     return (A a) -> f.apply(this.apply(a)).apply(a);
   }
