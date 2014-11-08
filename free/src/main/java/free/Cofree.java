@@ -41,6 +41,14 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
     return applyCofree(x -> b, g, F);
   }
 
+  public <B> Cofree<F, B> flatMap(final F1<A, Cofree<F, B>> f, final Functor<F> F, final Plus<F> G){
+    final Cofree<F, B> c = narrow(f.apply(head));
+    return new Cofree<F, B>(
+      c.head,
+      c.t.map(ct -> G.plus(c.tail(), F.map(x -> x.flatMap(f, F, G), tail())))
+    );
+  }
+
   public static <G, X, Y> Cofree<G, X> unfold(final Y y, final F1<Y, T2<X, _1<G, Y>>> f, final Functor<G> G){
     final T2<X, _1<G, Y>> t = f.apply(y);
     final Free<F0.z, _1<G, Y>> gy = Free.done(t._2);
@@ -59,6 +67,10 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
     return (Cofree<G, X>)fa;
   }
 
+  public static <G, X> Cofree<G, X> point(final X x, final PlusEmpty<G> G){
+    return new Cofree<>(x, Free.done(G.empty()));
+  }
+
   public static <F> Comonad<Cofree<F, ?>> comonad(final Functor<F> F){
     return new Comonad<Cofree<F, ?>>(){
 
@@ -75,6 +87,39 @@ public final class Cofree<F, A> implements _1<Cofree<F, ?>, A> {
       @Override
       public <A> A copoint(_1<Cofree<F, ?>, A> fa) {
         return narrow(fa).head;
+      }
+    };
+  }
+
+  public static <F> Bind<Cofree<F, ?>> bind(final Functor<F> F, final Plus<F> G){
+    return new Bind.WithDefault<Cofree<F, ?>>() {
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> flatMap(F1<A, _1<Cofree<F, ?>, B>> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).flatMap(f.map(Cofree::narrow), F, G);
+      }
+
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> map(F1<A, B> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).map(f, F);
+      }
+    };
+  }
+
+  public static <F> Monad<Cofree<F, ?>> monad(final Functor<F> F, final PlusEmpty<F> G){
+    return new Monad.WithDefault<Cofree<F, ?>>() {
+      @Override
+      public <A> _1<Cofree<F, ?>, A> point(F0<A> a) {
+        return Cofree.point(a.apply(), G);
+      }
+
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> flatMap(F1<A, _1<Cofree<F, ?>, B>> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).flatMap(f.map(Cofree::narrow), F, G);
+      }
+
+      @Override
+      public <A, B> _1<Cofree<F, ?>, B> map(F1<A, B> f, _1<Cofree<F, ?>, A> fa) {
+        return narrow(fa).map(f, F);
       }
     };
   }
