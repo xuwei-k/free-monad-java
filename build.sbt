@@ -1,8 +1,8 @@
-scalaVersion := "2.11.4"
+scalaVersion := "3.3.1"
 
 autoScalaLibrary := false
 
-scalacOptions ++= Seq("-Xexperimental", "-deprecation")
+scalacOptions ++= Seq("-deprecation")
 
 javacOptions += "-Xlint:unchecked"
 
