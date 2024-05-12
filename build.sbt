@@ -8,4 +8,4 @@ javacOptions += "-Xlint:unchecked"
 
 autoScalaLibrary := false
 
-licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
+licenses := Seq("MIT License" -> url("https://opensource.org/license/mit"))
