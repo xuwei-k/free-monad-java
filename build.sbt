@@ -6,4 +6,4 @@ javacOptions += "-Xlint:unchecked"
 
 autoScalaLibrary := false
 
-licenses := Seq("MIT License" -> url("https://opensource.org/license/mit"))
+licenses := Seq("MIT License" -> uri("https://opensource.org/license/mit"))
